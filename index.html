@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bags Morim</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
@@ -20,11 +19,13 @@
     --text: #4a3d38;
     --text-light: #8a7a75;
     --white: #ffffff;
-    --shadow: rgba(74, 61, 56, 0.1);
-    --shadow-md: rgba(74, 61, 56, 0.15);
+    --shadow: rgba(74,61,56,0.1);
+    --shadow-md: rgba(74,61,56,0.15);
+    --border: rgba(232,221,208,0.8);
+    --radius: 20px;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     font-family: 'Lato', sans-serif;
@@ -33,415 +34,232 @@
     min-height: 100vh;
   }
 
-  /* ─── BACKGROUND TEXTURE ─── */
   body::before {
     content: '';
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background-image:
       radial-gradient(circle at 20% 20%, rgba(212,165,160,0.12) 0%, transparent 50%),
       radial-gradient(circle at 80% 80%, rgba(168,181,160,0.12) 0%, transparent 50%),
       radial-gradient(circle at 60% 10%, rgba(232,221,208,0.3) 0%, transparent 40%);
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
   }
 
-  /* ─── HEADER ─── */
   header {
-    position: relative;
-    z-index: 10;
+    position: sticky; top: 0; z-index: 10;
     background: var(--white);
     border-bottom: 1px solid var(--sand);
     padding: 18px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
     box-shadow: 0 2px 12px var(--shadow);
   }
 
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .logo { display: flex; align-items: center; gap: 12px; }
 
   .logo-icon {
-    width: 44px;
-    height: 44px;
+    width: 44px; height: 44px;
     background: linear-gradient(135deg, var(--rose), var(--sage));
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
   }
 
-  .logo-text h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    color: var(--text);
-    letter-spacing: 0.5px;
-  }
+  .logo h1 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); }
+  .logo span { font-size: 11px; color: var(--text-light); letter-spacing: 1.5px; text-transform: uppercase; }
 
-  .logo-text span {
-    font-size: 11px;
-    color: var(--text-light);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-  }
+  #headerDate { font-size: 12px; color: var(--text-light); text-align: right; line-height: 1.6; }
 
-  .header-date {
-    font-size: 12px;
-    color: var(--text-light);
-    text-align: right;
-    line-height: 1.6;
-  }
+  main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 24px 16px 100px; }
 
-  /* ─── MAIN ─── */
-  main {
-    position: relative;
-    z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 24px 16px 100px;
-  }
-
-  /* ─── SECTION TITLE ─── */
   .section-title {
     font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    color: var(--text-light);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-    margin-top: 28px;
+    font-size: 13px; color: var(--text-light);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin: 28px 0 14px;
   }
 
-  /* ─── KPI CARDS ─── */
-  .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-  }
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 
-  @media (max-width: 640px) {
-    .kpi-grid { grid-template-columns: 1fr; }
-  }
-  @media (min-width: 641px) and (max-width: 900px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  }
+  @media (max-width: 640px) { .kpi-grid { grid-template-columns: 1fr; } }
+  @media (min-width: 641px) and (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
 
   .kpi-card {
     background: var(--white);
-    border-radius: 20px;
+    border-radius: var(--radius);
     padding: 22px 20px;
     box-shadow: 0 4px 16px var(--shadow);
-    border: 1px solid rgba(232,221,208,0.8);
+    border: 1px solid var(--border);
+    position: relative; overflow: hidden;
     transition: transform 0.2s, box-shadow 0.2s;
-    position: relative;
-    overflow: hidden;
   }
 
-  .kpi-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-  }
+  .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-md); }
 
+  .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
   .kpi-card.rose::before { background: linear-gradient(90deg, var(--rose), var(--blush)); }
   .kpi-card.sage::before { background: linear-gradient(90deg, var(--sage), #c8d5c0); }
   .kpi-card.sand::before { background: linear-gradient(90deg, var(--sand), #d4c8b8); }
 
-  .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-md); }
+  .kpi-label { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+  .kpi-value { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--text); line-height: 1.1; }
+  .kpi-sub { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+  .kpi-icon { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); font-size: 36px; opacity: 0.1; }
 
-  .kpi-label {
-    font-size: 11px;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  .actions-bar { display: flex; gap: 10px; margin: 4px 0 20px; flex-wrap: wrap; }
+
+  .btn-action {
+    padding: 10px 18px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(122,144,112,0.4);
+    background: var(--white);
+    color: var(--sage-dark);
+    font-family: 'Lato', sans-serif;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.15s;
+    box-shadow: 0 2px 8px var(--shadow);
   }
 
-  .kpi-value {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    color: var(--text);
-    line-height: 1.1;
-  }
+  .btn-action:hover { background: #f0f5ee; border-color: var(--sage-dark); transform: translateY(-1px); }
+  .btn-import { border-color: rgba(212,165,160,0.4); color: var(--rose-dark); }
+  .btn-import:hover { background: #fdf0ee; border-color: var(--rose-dark); }
 
-  .kpi-sub {
-    font-size: 12px;
-    color: var(--text-light);
-    margin-top: 4px;
-  }
-
-  .kpi-icon {
-    position: absolute;
-    right: 18px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 36px;
-    opacity: 0.12;
-  }
-
-  /* ─── SALES TABLE ─── */
   .table-wrap {
     background: var(--white);
-    border-radius: 20px;
+    border-radius: var(--radius);
     box-shadow: 0 4px 16px var(--shadow);
-    border: 1px solid rgba(232,221,208,0.8);
+    border: 1px solid var(--border);
     overflow: hidden;
   }
 
   .table-header {
     padding: 18px 20px;
     border-bottom: 1px solid var(--sand);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
   }
 
-  .table-header h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 17px;
-    color: var(--text);
-  }
+  .table-header h3 { font-family: 'Playfair Display', serif; font-size: 17px; }
 
   .search-input {
     border: 1px solid var(--sand);
     border-radius: 30px;
     padding: 8px 16px;
-    font-family: 'Lato', sans-serif;
-    font-size: 13px;
-    color: var(--text);
-    background: var(--cream);
-    outline: none;
-    width: 200px;
+    font-family: 'Lato', sans-serif; font-size: 13px;
+    color: var(--text); background: var(--cream);
+    outline: none; width: 200px;
     transition: border-color 0.2s, width 0.3s;
   }
 
   .search-input:focus { border-color: var(--rose); width: 240px; }
 
   .table-scroll { overflow-x: auto; }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
 
   thead th {
     padding: 12px 14px;
-    text-align: left;
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text-light);
-    background: var(--cream);
-    font-weight: 700;
-    white-space: nowrap;
+    text-align: left; font-size: 10px;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-light); background: var(--cream);
+    font-weight: 700; white-space: nowrap;
   }
 
-  tbody tr {
-    border-top: 1px solid rgba(232,221,208,0.6);
-    transition: background 0.15s;
-  }
-
+  tbody tr { border-top: 1px solid rgba(232,221,208,0.6); transition: background 0.15s; }
   tbody tr:hover { background: rgba(240,224,219,0.25); }
+  tbody td { padding: 13px 14px; color: var(--text); white-space: nowrap; }
 
-  tbody td {
-    padding: 13px 14px;
-    color: var(--text);
-    white-space: nowrap;
-  }
-
-  .badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-  }
-
-  .badge-pix { background: rgba(168,181,160,0.2); color: var(--sage-dark); }
-  .badge-card { background: rgba(212,165,160,0.2); color: var(--rose-dark); }
-  .badge-dinheiro { background: rgba(232,221,208,0.5); color: #8a7560; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .badge-pix           { background: rgba(168,181,160,0.2); color: var(--sage-dark); }
+  .badge-card          { background: rgba(212,165,160,0.2); color: var(--rose-dark); }
+  .badge-dinheiro      { background: rgba(232,221,208,0.5); color: #8a7560; }
   .badge-transferencia { background: rgba(168,181,200,0.2); color: #6a80a0; }
 
-  .profit-pos { color: var(--sage-dark); font-weight: 700; }
-  .profit-neg { color: #c07070; font-weight: 700; }
+  .profit-pos  { color: var(--sage-dark); font-weight: 700; }
+  .profit-neg  { color: #c07070; font-weight: 700; }
   .profit-pend { color: var(--rose); font-weight: 700; }
 
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-light);
-  }
-
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); }
   .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
   .empty-state p { font-family: 'Playfair Display', serif; font-size: 16px; font-style: italic; }
 
-  /* ─── FAB ─── */
   .fab {
-    position: fixed;
-    bottom: 28px;
-    right: 24px;
-    z-index: 100;
+    position: fixed; bottom: 28px; right: 24px; z-index: 100;
     background: linear-gradient(135deg, var(--rose), var(--rose-dark));
-    color: white;
-    border: none;
-    border-radius: 56px;
+    color: white; border: none; border-radius: 56px;
     padding: 16px 26px;
-    font-family: 'Lato', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 700;
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(184,133,127,0.45);
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    display: flex; align-items: center; gap: 8px;
     transition: transform 0.2s, box-shadow 0.2s;
   }
 
   .fab:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 10px 28px rgba(184,133,127,0.5); }
   .fab:active { transform: scale(0.97); }
 
-  /* ─── MODAL OVERLAY ─── */
   .overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
+    display: none; position: fixed; inset: 0;
     background: rgba(74,61,56,0.35);
     backdrop-filter: blur(4px);
     z-index: 200;
-    align-items: flex-end;
-    justify-content: center;
+    align-items: flex-end; justify-content: center;
   }
 
   .overlay.open { display: flex; }
+  @media (min-width: 640px) { .overlay { align-items: center; padding: 16px; } }
 
-  @media (min-width: 640px) {
-    .overlay { align-items: center; }
-  }
-
-  /* ─── MODAL ─── */
   .modal {
     background: var(--white);
-    width: 100%;
-    max-width: 600px;
+    width: 100%; max-width: 600px;
     border-radius: 28px 28px 0 0;
     padding: 28px 24px 36px;
-    max-height: 92vh;
-    overflow-y: auto;
+    max-height: 92vh; overflow-y: auto;
     box-shadow: 0 -8px 40px var(--shadow-md);
-    animation: slideUp 0.3s ease;
+    animation: slideUp 0.28s ease;
   }
 
-  @media (min-width: 640px) {
-    .modal {
-      border-radius: 28px;
-      max-height: 88vh;
-    }
-  }
+  @media (min-width: 640px) { .modal { border-radius: 28px; max-height: 88vh; } }
 
   @keyframes slideUp {
     from { transform: translateY(40px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    to   { transform: translateY(0);    opacity: 1; }
   }
 
-  .modal-handle {
-    width: 40px;
-    height: 4px;
-    background: var(--sand);
-    border-radius: 4px;
-    margin: 0 auto 20px;
-  }
-
+  .modal-handle { width: 40px; height: 4px; background: var(--sand); border-radius: 4px; margin: 0 auto 20px; }
   @media (min-width: 640px) { .modal-handle { display: none; } }
 
-  .modal-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text); margin-bottom: 4px; }
+  .modal-subtitle { font-size: 13px; color: var(--text-light); margin-bottom: 24px; }
 
-  .modal-subtitle {
-    font-size: 13px;
-    color: var(--text-light);
-    margin-bottom: 24px;
-  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 480px) { .form-grid { grid-template-columns: 1fr; } }
 
-  /* ─── FORM ─── */
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-
-  @media (max-width: 480px) {
-    .form-grid { grid-template-columns: 1fr; }
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
   .form-group.full { grid-column: 1 / -1; }
 
-  label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--text-light);
-  }
+  label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-light); }
 
   input, select, textarea {
     border: 1.5px solid var(--sand);
     border-radius: 12px;
     padding: 11px 14px;
-    font-family: 'Lato', sans-serif;
-    font-size: 14px;
-    color: var(--text);
-    background: var(--cream);
-    outline: none;
+    font-family: 'Lato', sans-serif; font-size: 14px;
+    color: var(--text); background: var(--cream);
+    outline: none; width: 100%;
     transition: border-color 0.2s, background 0.2s;
-    width: 100%;
   }
 
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--rose);
-    background: var(--white);
-  }
-
+  input:focus, select:focus, textarea:focus { border-color: var(--rose); background: var(--white); }
+  select option { background: var(--white); }
   textarea { resize: vertical; min-height: 70px; }
 
-  .form-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 24px;
-  }
+  .form-actions { display: flex; gap: 12px; margin-top: 24px; }
 
   .btn-primary {
     flex: 1;
     background: linear-gradient(135deg, var(--rose), var(--rose-dark));
-    color: white;
-    border: none;
-    border-radius: 14px;
+    color: white; border: none; border-radius: 14px;
     padding: 14px;
-    font-family: 'Lato', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
+    font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 700;
     cursor: pointer;
     transition: opacity 0.2s, transform 0.2s;
   }
@@ -450,50 +268,38 @@
 
   .btn-secondary {
     padding: 14px 20px;
-    border: 1.5px solid var(--sand);
-    border-radius: 14px;
+    border: 1.5px solid var(--sand); border-radius: 14px;
     background: none;
-    font-family: 'Lato', sans-serif;
-    font-size: 14px;
-    color: var(--text-light);
+    font-family: 'Lato', sans-serif; font-size: 14px; color: var(--text-light);
     cursor: pointer;
     transition: background 0.2s;
   }
 
   .btn-secondary:hover { background: var(--cream); }
 
-  /* ─── TOAST ─── */
-  .toast {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    background: var(--text);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 12px;
-    font-size: 13px;
-    z-index: 999;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.3s;
-    pointer-events: none;
-  }
-
-  .toast.show { opacity: 1; transform: translateY(0); }
-
-  /* ─── DELETE BTN ─── */
   .btn-del {
-    background: none;
-    border: none;
-    color: #c07070;
-    cursor: pointer;
-    font-size: 15px;
-    padding: 4px 6px;
+    background: none; border: none;
+    color: #c07070; cursor: pointer;
+    font-size: 15px; padding: 4px 6px;
     border-radius: 6px;
-    transition: background 0.15s;
+    transition: background 0.15s, color 0.15s;
   }
 
   .btn-del:hover { background: rgba(192,112,112,0.1); }
+
+  .toast {
+    position: fixed; top: 80px; right: 20px;
+    padding: 12px 20px; border-radius: 12px;
+    font-family: 'Lato', sans-serif; font-size: 13px; font-weight: 700;
+    z-index: 999; pointer-events: none;
+    opacity: 0; transform: translateY(-10px) translateX(10px);
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 20px var(--shadow-md);
+  }
+
+  .toast.show { opacity: 1; transform: translateY(0) translateX(0); }
+  .toast.success { background: var(--text); color: white; }
+  .toast.error   { background: #c07070; color: white; }
 </style>
 </head>
 <body>
@@ -501,12 +307,12 @@
 <header>
   <div class="logo">
     <div class="logo-icon">🧶</div>
-    <div class="logo-text">
+    <div>
       <h1>Bags Morim</h1>
       <span>Controle de Vendas</span>
     </div>
   </div>
-  <div class="header-date" id="headerDate"></div>
+  <div id="headerDate"></div>
 </header>
 
 <main>
@@ -527,7 +333,7 @@
     </div>
     <div class="kpi-card sand">
       <div class="kpi-label">📅 Média p/ Recebimento</div>
-      <div class="kpi-value" id="kpiAvgDays">0 dias</div>
+      <div class="kpi-value" id="kpiAvgDays">— dias</div>
       <div class="kpi-sub" id="kpiAvgDaysSub">Entre venda e recebimento</div>
       <div class="kpi-icon">🕰️</div>
     </div>
@@ -535,10 +341,11 @@
 
   <p class="section-title" style="margin-top:32px">Histórico de Vendas</p>
 
-  <button onclick="exportExcelFormatado()" 
-style="margin:10px; padding:10px; border-radius:8px; border:none; background:#7a9070; color:white; cursor:pointer;">
-📊 Exportar Excel
-</button>
+  <div class="actions-bar">
+    <button class="btn-action" onclick="exportExcel()">📊 Exportar Excel</button>
+    <button class="btn-action btn-import" onclick="document.getElementById('importFile').click()">📥 Importar Excel (Backup)</button>
+    <input type="file" id="importFile" style="display:none" accept=".xlsx,.xls" onchange="importExcel(event)">
+  </div>
 
   <div class="table-wrap">
     <div class="table-header">
@@ -580,7 +387,7 @@ style="margin:10px; padding:10px; border-radius:8px; border:none; background:#7a
     <div class="form-grid">
       <div class="form-group">
         <label>Produto *</label>
-        <input type="text" id="fProduto" placeholder="ex: Bolsa, Tapete, Aula..." required>
+        <input type="text" id="fProduto" placeholder="ex: Bolsa, Tapete, Aula...">
       </div>
       <div class="form-group">
         <label>Especificação</label>
@@ -588,7 +395,7 @@ style="margin:10px; padding:10px; border-radius:8px; border:none; background:#7a
       </div>
       <div class="form-group">
         <label>Valor da Venda (R$) *</label>
-        <input type="number" id="fValorVenda" placeholder="0,00" min="0" step="0.01" required>
+        <input type="number" id="fValorVenda" placeholder="0,00" min="0" step="0.01">
       </div>
       <div class="form-group">
         <label>Valor Recebido (R$)</label>
@@ -612,7 +419,7 @@ style="margin:10px; padding:10px; border-radius:8px; border:none; background:#7a
       </div>
       <div class="form-group">
         <label>Data da Venda *</label>
-        <input type="date" id="fDataVenda" required>
+        <input type="date" id="fDataVenda">
       </div>
       <div class="form-group">
         <label>Data do Recebimento</label>
@@ -634,75 +441,68 @@ style="margin:10px; padding:10px; border-radius:8px; border:none; background:#7a
 <div class="toast" id="toast"></div>
 
 <script>
-  // ─── DATA ───
-  let sales = JSON.parse(localStorage.getItem('bagsmorimSales') || '[]');
+  const STORAGE_KEY = 'bagsmorimSales';
+  let sales = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 
-  function save() {
-    localStorage.setItem('bagsmorimSales', JSON.stringify(sales));
+  function persistSales() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sales));
   }
 
-  // ─── DATE ───
-  const now = new Date();
+  const today = new Date();
   document.getElementById('headerDate').innerHTML =
-    now.toLocaleDateString('pt-BR', { weekday: 'long' }) + '<br>' +
-    now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+    today.toLocaleDateString('pt-BR', { weekday: 'long' }) + '<br>' +
+    today.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
-  // Set today as default for sale date
-  if(document.getElementById('fDataVenda')) {
-    document.getElementById('fDataVenda').value = now.toISOString().split('T')[0];
-  }
+  document.getElementById('fDataVenda').value = today.toISOString().split('T')[0];
 
-  // ─── KPIs ───
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  calcKPIs();
+  renderTable();
+
   function calcKPIs() {
+    const topEl   = document.getElementById('kpiTopProduct');
+    const topSub  = document.getElementById('kpiTopProductSub');
+    const profEl  = document.getElementById('kpiProfit');
+    const profSub = document.getElementById('kpiProfitSub');
+    const avgEl   = document.getElementById('kpiAvgDays');
+    const avgSub  = document.getElementById('kpiAvgDaysSub');
+
     if (!sales.length) {
-      document.getElementById('kpiTopProduct').textContent = '—';
-      document.getElementById('kpiTopProductSub').textContent = 'Nenhuma venda ainda';
-      document.getElementById('kpiProfit').textContent = 'R$ 0,00';
-      document.getElementById('kpiProfitSub').textContent = 'Nenhuma venda registrada';
-      document.getElementById('kpiAvgDays').textContent = '— dias';
-      document.getElementById('kpiAvgDaysSub').textContent = 'Sem dados suficientes';
+      topEl.textContent  = '—';           topSub.textContent  = 'Nenhuma venda ainda';
+      profEl.textContent = 'R$ 0,00';     profSub.textContent = 'Nenhuma venda registrada';
+      avgEl.textContent  = '— dias';      avgSub.textContent  = 'Sem dados suficientes';
       return;
     }
 
-    // Top product
-    const freq = {};
-    sales.forEach(s => { freq[s.produto] = (freq[s.produto] || 0) + 1; });
-    const top = Object.entries(freq).sort((a,b) => b[1]-a[1])[0];
-    document.getElementById('kpiTopProduct').textContent = top[0];
-    document.getElementById('kpiTopProductSub').textContent = `${top[1]} venda${top[1]>1?'s':''} registrada${top[1]>1?'s':''}`;
+    const freq = new Map();
+    sales.forEach(s => freq.set(s.produto, (freq.get(s.produto) || 0) + 1));
+    const [topName, topCount] = [...freq.entries()].reduce((a, b) => b[1] > a[1] ? b : a);
+    topEl.textContent  = topName;
+    topSub.textContent = `${topCount} venda${topCount > 1 ? 's' : ''} registrada${topCount > 1 ? 's' : ''}`;
 
-    // Profit
-    let totalProfit = 0;
-    sales.forEach(s => {
-      const rec = parseFloat(s.valorRecebido) || 0;
-      const custo = parseFloat(s.custo) || 0;
-      totalProfit += rec - custo;
-    });
-    document.getElementById('kpiProfit').textContent = fmt(totalProfit);
-    document.getElementById('kpiProfitSub').textContent = `${sales.length} venda${sales.length>1?'s':''} no total`;
+    const totalProfit = sales.reduce((acc, s) =>
+      acc + (parseFloat(s.valorRecebido) || 0) - (parseFloat(s.custo) || 0), 0);
+    profEl.textContent = fmt(totalProfit);
+    profSub.textContent = `${sales.length} venda${sales.length > 1 ? 's' : ''} no total`;
 
-    // Avg days
-    const withDates = sales.filter(s => s.dataVenda && s.dataReceb);
+    const withDates = sales.filter(s => s.dataVenda && s.dataReceb && s.dataReceb >= s.dataVenda);
     if (withDates.length) {
-      const avg = withDates.reduce((acc, s) => {
-        const d1 = new Date(s.dataVenda), d2 = new Date(s.dataReceb);
-        return acc + Math.max(0, Math.round((d2-d1)/(1000*60*60*24)));
-      }, 0) / withDates.length;
-      document.getElementById('kpiAvgDays').textContent = `${avg.toFixed(1)} dias`;
-      document.getElementById('kpiAvgDaysSub').textContent = `Baseado em ${withDates.length} venda${withDates.length>1?'s':''}`;
+      const avg = withDates.reduce((acc, s) =>
+        acc + (new Date(s.dataReceb) - new Date(s.dataVenda)) / 86400000, 0) / withDates.length;
+      avgEl.textContent  = `${avg.toFixed(1)} dias`;
+      avgSub.textContent = `Baseado em ${withDates.length} venda${withDates.length > 1 ? 's' : ''}`;
     } else {
-      document.getElementById('kpiAvgDays').textContent = '— dias';
-      document.getElementById('kpiAvgDaysSub').textContent = 'Preencha datas de recebimento';
+      avgEl.textContent  = '— dias';
+      avgSub.textContent = 'Preencha datas de recebimento';
     }
   }
 
-  // ─── TABLE ───
   function renderTable() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = sales.filter(s =>
-      s.produto.toLowerCase().includes(q) ||
-      (s.espec||'').toLowerCase().includes(q)
-    );
+    const q = document.getElementById('searchInput').value.toLowerCase().trim();
+    const filtered = sales
+      .filter(s => s.produto.toLowerCase().includes(q) || (s.espec || '').toLowerCase().includes(q))
+      .slice().reverse();
 
     const tbody = document.getElementById('salesTableBody');
 
@@ -710,65 +510,58 @@ style="margin:10px; padding:10px; border-radius:8px; border:none; background:#7a
       tbody.innerHTML = `<tr><td colspan="10">
         <div class="empty-state">
           <div class="empty-icon">🧶</div>
-          <p>${sales.length ? 'Nenhum resultado encontrado.' : 'Nenhuma venda registrada ainda.'}</p>
+          <p>${q ? `Nenhum resultado para "${escHtml(q)}"` : 'Nenhuma venda registrada ainda.'}</p>
         </div>
       </td></tr>`;
       return;
     }
 
-    tbody.innerHTML = filtered.slice().reverse().map((s, ri) => {
-      const rec = parseFloat(s.valorRecebido) || 0;
-      const custo = parseFloat(s.custo) || 0;
+    const BADGE_MAP = {
+      'Pix': 'badge-pix', 'Cartão de Débito': 'badge-card',
+      'Cartão de Crédito': 'badge-card', 'Dinheiro': 'badge-dinheiro',
+      'Transferência': 'badge-transferencia', 'A Prazo': 'badge-card',
+    };
+
+    tbody.innerHTML = filtered.map(s => {
+      const rec    = parseFloat(s.valorRecebido) || 0;
+      const custo  = parseFloat(s.custo) || 0;
       const profit = rec > 0 ? rec - custo : null;
       const profitClass = profit === null ? 'profit-pend' : profit >= 0 ? 'profit-pos' : 'profit-neg';
-      const profitText = profit === null ? 'Pendente' : fmt(profit);
-
-      const badges = {
-        'Pix': 'badge-pix',
-        'Cartão de Débito': 'badge-card',
-        'Cartão de Crédito': 'badge-card',
-        'Dinheiro': 'badge-dinheiro',
-        'Transferência': 'badge-transferencia',
-        'A Prazo': 'badge-card',
-      };
-      const pagBadge = badges[s.pagamento] || 'badge-dinheiro';
-
-      const realIdx = sales.indexOf(s);
+      const profitText  = profit === null ? 'Pendente' : fmt(profit);
+      const badge = BADGE_MAP[s.pagamento] || 'badge-dinheiro';
 
       return `<tr>
-        <td><strong>${s.produto}</strong></td>
-        <td style="color:var(--text-light)">${s.espec || '—'}</td>
+        <td><strong>${escHtml(s.produto)}</strong></td>
+        <td style="color:var(--text-light)">${escHtml(s.espec || '—')}</td>
         <td>${fmt(s.valorVenda)}</td>
         <td>${rec > 0 ? fmt(rec) : '<span style="color:var(--rose)">Pendente</span>'}</td>
         <td>${custo > 0 ? fmt(custo) : '—'}</td>
         <td class="${profitClass}">${profitText}</td>
-        <td>${s.pagamento ? `<span class="badge ${pagBadge}">${s.pagamento}</span>` : '—'}</td>
+        <td>${s.pagamento ? `<span class="badge ${badge}">${escHtml(s.pagamento)}</span>` : '—'}</td>
         <td>${fmtDate(s.dataVenda)}</td>
         <td>${s.dataReceb ? fmtDate(s.dataReceb) : '<span style="color:var(--rose)">—</span>'}</td>
-        <td><button class="btn-del" onclick="deleteSale(${realIdx})" title="Excluir">✕</button></td>
+        <td><button class="btn-del" onclick="deleteSale(${s.id})" title="Excluir">✕</button></td>
       </tr>`;
     }).join('');
   }
 
-  function deleteSale(idx) {
+  function deleteSale(id) {
     if (!confirm('Excluir esta venda?')) return;
-    sales.splice(idx, 1);
-    save();
-    calcKPIs();
-    renderTable();
-    toast('Venda removida.');
+    sales = sales.filter(s => s.id !== id);
+    persistSales(); calcKPIs(); renderTable();
+    showToast('🗑️ Venda removida.');
   }
 
-  // ─── MODAL ───
   function openModal() {
+    clearForm();
     document.getElementById('overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('fProduto').focus(), 300);
   }
 
   function closeModal() {
     document.getElementById('overlay').classList.remove('open');
     document.body.style.overflow = '';
-    clearForm();
   }
 
   function handleOverlayClick(e) {
@@ -776,116 +569,148 @@ style="margin:10px; padding:10px; border-radius:8px; border:none; background:#7a
   }
 
   function clearForm() {
-    ['fProduto','fEspec','fValorVenda','fValorRecebido','fCusto','fObs'].forEach(id => {
-      const el = document.getElementById(id);
-      if(el) el.value = '';
+    ['fProduto','fEspec','fValorVenda','fValorRecebido','fCusto','fObs','fDataReceb'].forEach(id => {
+      document.getElementById(id).value = '';
     });
-    document.getElementById('fPagamento').value = '';
-    document.getElementById('fDataVenda').value = new Date().toISOString().split('T')[0];
-    document.getElementById('fDataReceb').value = '';
+    document.getElementById('fPagamento').selectedIndex = 0;
+    document.getElementById('fDataVenda').value = today.toISOString().split('T')[0];
   }
 
   function saveSale() {
-    const produto = document.getElementById('fProduto').value.trim();
+    const produto    = document.getElementById('fProduto').value.trim();
     const valorVenda = document.getElementById('fValorVenda').value;
-    const dataVenda = document.getElementById('fDataVenda').value;
+    const dataVenda  = document.getElementById('fDataVenda').value;
+    const dataReceb  = document.getElementById('fDataReceb').value;
 
-    if (!produto) { alert('Por favor, informe o nome do produto.'); return; }
-    if (!valorVenda) { alert('Por favor, informe o valor da venda.'); return; }
-    if (!dataVenda) { alert('Por favor, informe a data da venda.'); return; }
+    if (!produto)    { showToast('⚠️ Informe o nome do produto', true); document.getElementById('fProduto').focus(); return; }
+    if (!valorVenda) { showToast('⚠️ Informe o valor da venda', true); document.getElementById('fValorVenda').focus(); return; }
+    if (!dataVenda)  { showToast('⚠️ Informe a data da venda', true); return; }
+    if (dataVenda && dataReceb && dataReceb < dataVenda) {
+      showToast('⚠️ Data de recebimento anterior à venda', true); return;
+    }
 
     sales.push({
-      produto,
-      espec: document.getElementById('fEspec').value.trim(),
-      valorVenda: parseFloat(valorVenda),
-      valorRecebido: document.getElementById('fValorRecebido').value ? parseFloat(document.getElementById('fValorRecebido').value) : '',
-      custo: document.getElementById('fCusto').value ? parseFloat(document.getElementById('fCusto').value) : '',
-      pagamento: document.getElementById('fPagamento').value,
-      dataVenda,
-      dataReceb: document.getElementById('fDataReceb').value,
-      obs: document.getElementById('fObs').value.trim(),
-      criadoEm: new Date().toISOString()
+      id: Date.now(), produto,
+      espec:         document.getElementById('fEspec').value.trim(),
+      valorVenda:    parseFloat(valorVenda),
+      valorRecebido: parseFloat(document.getElementById('fValorRecebido').value) || '',
+      custo:         parseFloat(document.getElementById('fCusto').value) || '',
+      pagamento:     document.getElementById('fPagamento').value,
+      dataVenda, dataReceb,
+      obs:           document.getElementById('fObs').value.trim(),
+      criadoEm:      new Date().toISOString()
     });
 
-    save();
-    calcKPIs();
-    renderTable();
-    closeModal();
-    toast('✓ Venda registrada com sucesso!');
+    persistSales(); calcKPIs(); renderTable(); closeModal();
+    showToast('✓ Venda registrada com sucesso!');
   }
 
-  // ─── HELPERS ───
+  function exportExcel() {
+    if (!sales.length) { showToast('⚠️ Sem dados para exportar', true); return; }
+
+    const rows = sales.map(s => ({
+      Produto:          s.produto,
+      Especificacao:    s.espec || '',
+      Valor_Venda:      s.valorVenda || 0,
+      Valor_Recebido:   parseFloat(s.valorRecebido) || 0,
+      Custo:            parseFloat(s.custo) || 0,
+      Lucro:            (parseFloat(s.valorRecebido) || 0) - (parseFloat(s.custo) || 0),
+      Pagamento:        s.pagamento || '',
+      Data_Venda:       s.dataVenda || '',
+      Data_Recebimento: s.dataReceb || '',
+      Observacoes:      s.obs || ''
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let i = range.s.r + 1; i <= range.e.r; i++) {
+      ['C','D','E','F'].forEach(col => {
+        const cell = ws[col + (i + 1)];
+        if (cell) { cell.t = 'n'; cell.z = 'R$ #,##0.00'; }
+      });
+    }
+    ws['!cols'] = [
+      { wch: 22 }, { wch: 26 }, { wch: 15 }, { wch: 18 },
+      { wch: 12 }, { wch: 12 }, { wch: 20 }, { wch: 15 },
+      { wch: 18 }, { wch: 30 }
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Vendas');
+    const date = today.toLocaleDateString('pt-BR').replace(/\//g, '-');
+    XLSX.writeFile(wb, `BagsMorim_Vendas_${date}.xlsx`);
+    showToast('📊 Excel exportado!');
+  }
+
+  function importExcel(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        const data     = new Uint8Array(ev.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet    = workbook.Sheets[workbook.SheetNames[0]];
+        const json     = XLSX.utils.sheet_to_json(sheet);
+
+        if (!json.length) { showToast('⚠️ Planilha vazia', true); return; }
+
+        const imported = json.map((item, i) => ({
+          id:            Date.now() + i,
+          produto:       String(item.Produto || '').trim(),
+          espec:         String(item.Especificacao || '').trim(),
+          valorVenda:    parseFloat(item.Valor_Venda)    || 0,
+          valorRecebido: parseFloat(item.Valor_Recebido) || '',
+          custo:         parseFloat(item.Custo)          || '',
+          pagamento:     String(item.Pagamento || '').trim(),
+          dataVenda:     item.Data_Venda       || '',
+          dataReceb:     item.Data_Recebimento || '',
+          obs:           String(item.Observacoes || '').trim(),
+          criadoEm:      new Date().toISOString()
+        })).filter(s => s.produto);
+
+        if (!imported.length) { showToast('⚠️ Nenhum registro válido encontrado', true); return; }
+        if (!confirm(`Importar ${imported.length} registro(s)? Serão somados aos atuais.`)) return;
+
+        sales = [...sales, ...imported];
+        persistSales(); calcKPIs(); renderTable();
+        showToast(`✅ ${imported.length} registros importados!`);
+      } catch (err) {
+        showToast('❌ Erro ao ler o arquivo', true);
+        console.error(err);
+      }
+    };
+
+    reader.readAsArrayBuffer(file);
+    e.target.value = '';
+  }
+
   function fmt(val) {
-    return new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' }).format(val || 0);
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
   }
 
   function fmtDate(str) {
     if (!str) return '—';
-    const [y,m,d] = str.split('-');
+    const [y, m, d] = str.split('-');
     return `${d}/${m}/${y}`;
   }
 
-  function toast(msg) {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 3000);
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  function exportExcelFormatado() {
-    if (typeof XLSX === "undefined") {
-      alert("Erro: Biblioteca de Excel não carregada. Verifique sua conexão.");
-      return;
-    }
-
-    if (!sales.length) {
-      alert("Não há dados para exportar.");
-      return;
-    }
-
-    const dados = sales.map(s => {
-      const lucro = (parseFloat(s.valorRecebido) || 0) - (parseFloat(s.custo) || 0);
-
-      return {
-        Produto: s.produto,
-        Especificação: s.espec || "",
-        "Valor Venda": s.valorVenda,
-        "Valor Recebido": s.valorRecebido || 0,
-        Custo: s.custo || 0,
-        Lucro: lucro,
-        Pagamento: s.pagamento || "",
-        "Data Venda": s.dataVenda,
-        "Data Recebimento": s.dataReceb || ""
-      };
-    });
-
-    const ws = XLSX.utils.json_to_sheet(dados);
-    const range = XLSX.utils.decode_range(ws['!ref']);
-
-    for (let i = range.s.r + 1; i <= range.e.r; i++) {
-      ["C", "D", "E", "F"].forEach(col => {
-        const cell = ws[col + (i + 1)];
-        if (cell) {
-          cell.t = 'n';
-          cell.z = 'R$ #,##0.00';
-        }
-      });
-    }
-
-    ws['!cols'] = [
-      { wch: 20 }, { wch: 25 }, { wch: 15 }, { wch: 18 }, { wch: 12 },
-      { wch: 12 }, { wch: 18 }, { wch: 15 }, { wch: 18 }
-    ];
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Vendas");
-    XLSX.writeFile(wb, "relatorio_vendas.xlsx");
+  let toastTimer;
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${isError ? 'error' : 'success'}`;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
   }
-
-  // ─── INIT ───
-  calcKPIs();
-  renderTable();
 </script>
-
 </body>
 </html>
